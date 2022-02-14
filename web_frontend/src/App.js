@@ -16,8 +16,8 @@ export default function App() {
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
       style: "mapbox://styles/flobau/ckzmrh1rf003o14o8kpeam5tm",
-      center: [13.811850882013132, 47.92356577261306],
-      zoom: 9,
+      center: [13.767067, 48.104741],
+      zoom: 8,
     });
     map.current.on("load", async () => {
       setLoaded(true);

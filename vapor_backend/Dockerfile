@@ -1,7 +1,12 @@
 # ================================
 # Build image
 # ================================
-FROM swiftarm/swift:5.5.2-ubuntu-focal as build
+#
+
+FROM --platform=linux/x86-64 swift
+
+FROM swift:5.5.2-focal as build
+#FROM swiftarm/swift:5.5.2-ubuntu-focal as build
 
 # Install OS updates and, if needed, sqlite3
 RUN export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true \
@@ -39,7 +44,9 @@ RUN [ -d /build/Resources ] && { mv /build/Resources ./Resources && chmod -R a-w
 # ================================
 # Run image
 # ================================
-FROM swiftarm/swift:5.5.2-ubuntu-focal-slim
+
+FROM swift:5.5.2-focal-slim
+#FROM swiftarm/swift:5.5.2-ubuntu-focal-slim
 
 # Make sure all system packages are up to date.
 RUN export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true && \
@@ -53,6 +60,9 @@ WORKDIR /app
 
 # Copy built executable and any staged resources from builder
 COPY --from=build --chown=vapor:vapor /staging /app
+
+#COPY Public/ ./Public/
+COPY Resources/ ./Resources/
 
 # Ensure all further commands run as the vapor user
 USER vapor:vapor

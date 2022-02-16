@@ -47,7 +47,7 @@ html {
   background: white;
   overflow: hidden;
   padding-left: 20px;
-  padding-right: 20px;
+  padding-right: 10px;
   box-sizing: border-box;
   z-index: 1;
 }
@@ -100,4 +100,7 @@ html {
 }
 .tour-item:hover {
   background: #eee;
+}
+#infocontainer {
+  display: none;
 }

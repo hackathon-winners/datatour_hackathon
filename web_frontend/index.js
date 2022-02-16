@@ -18,11 +18,18 @@ mapboxgl.accessToken =
    * so that users can look for tours
    */
   const search_input = document.getElementById("search");
+  const search_button = document.getElementById("searchbutton");
   const results = document.getElementById("results");
 
   search_input.addEventListener("input", (e) => {
     // re-displaying countries based on the new search_term
     searchHandler(e.target.value);
+  });
+
+  search_button.addEventListener("click", (e) => {
+    // re-displaying countries based on the new search_term
+    results.style.display = "block";
+    results.innerHTML = document.getElementById("infocontainer").innerHTML;
   });
 
   const searchHandler = (search_term) => {
@@ -56,9 +63,15 @@ mapboxgl.accessToken =
       li.addEventListener("click", (e) => {
         // cleanup if there was any previous tour
         cleanUp();
+        search_input.value = "";
 
         const [marker, popup] = createMarker(tour);
+
+        // we havent clicked on the marker, so we toggle here
+        marker.togglePopup();
+
         zoomInTour(e, marker, popup, tour);
+
         results.innerHTML = "";
       });
       ul.appendChild(li);

@@ -17,15 +17,8 @@ mapboxgl.accessToken =
    * SEARCH AS YOU TYPE
    * so that users can look for tours
    */
-  const search_wrapper = document.getElementById("searchwrapper");
   const search_input = document.getElementById("search");
-  const search_button = document.getElementById("searchbutton");
   const results = document.getElementById("results");
-
-  search_button.addEventListener("click", function () {
-    results.innerHTML = "";
-    search_wrapper.classList.toggle("close");
-  });
 
   search_input.addEventListener("input", (e) => {
     // re-displaying countries based on the new search_term
@@ -111,8 +104,6 @@ mapboxgl.accessToken =
     container: "map",
     zoom: 8,
     center: [14.633576, 48.250435],
-    // pitch: 76,
-    // bearing: 150,
     style: "mapbox://styles/mapbox/satellite-streets-v11",
     interactive: true,
     hash: false,
@@ -188,6 +179,7 @@ mapboxgl.accessToken =
   const zoomInTour = async (e, marker, popup, tour) => {
     // make sure no movement
     document.getElementById("map").classList.add("pointer-none");
+    document.getElementById("searchwrapper").classList.add("close");
 
     // fly to the clicked marker
     map.flyTo({
@@ -271,6 +263,7 @@ mapboxgl.accessToken =
     const animationPhase = (time - startTime) / animationDuration;
 
     if (animationPhase > 1) {
+      document.getElementById("searchwrapper").classList.remove("close");
       document.getElementById("map").classList.remove("pointer-none");
       document.getElementById("zoomOut").style.display = "block";
       return;

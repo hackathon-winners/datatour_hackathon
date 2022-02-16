@@ -26,7 +26,7 @@ mapboxgl.accessToken =
   // - download of first batch of routes
   // - Loading of the map
   const [tours] = await Promise.all([
-    fetch("api.json").then((response) => response.json()),
+    fetch("api/1.json").then((response) => response.json()),
     map.once("load"),
   ]);
 

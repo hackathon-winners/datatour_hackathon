@@ -22,6 +22,7 @@ for tour in tours:
 
         r = r+1
 
+        id = tour.find('id').text
         texts = [element.text for element in tour.find('texts')]
 
         # coordinates
@@ -31,7 +32,7 @@ for tour in tours:
 
         # prepare the tour
         dataset = {
-            "id": tour.find('id').text,
+            "id": id,
             "title": tour.find('title').text,
             "categories": categories,
             "text": texts[1],
@@ -44,6 +45,10 @@ for tour in tours:
             "ratings": [{"type": element.attrib["type"], "rating": element.text} for element in tour.find('ratings/rating')]
         }
 
+        # save the tour to api
+        with open("./api/tour/" + str(id) + '.json', 'w') as f:
+            json.dump({"data": dataset}, f)
+
         # add the tour
         tourlist.append(dataset)
 
@@ -55,8 +60,6 @@ per_page = 30
 output = {
     "data": {
         "total": len(tourlist),
-        "page": page,
-        "per_page": per_page,
         "items": []
     }
 }
@@ -65,25 +68,12 @@ count = 0
 random.shuffle(tourlist)
 
 for tour in tourlist:
+    output['data']['items'].append({
+        "id": tour['id'],
+        "title": tour['title'],
+        "city": tour['city'],
+        "coordinates": tour['geo']['main'],
+    })
 
-    count = count + 1
-    output['data']['items'].append(tour)
-
-    # we really only want to have a certain number of tours in a api request, so we write it out here
-    if count == 100:
-        with open("./api/" + str(page) + '.json', 'w') as f:
-            json.dump(output, f)
-
-            page = page + 1
-            count = 0
-
-            output['data']['items'] = []
-            output['data']['page'] = page
-
-
-# all the remaining tours will be added as well
-with open("./api/" + str(page) + '.json', 'w') as f:
+with open('./api/all.json', 'w') as f:
     json.dump(output, f)
-    output['data']['page'] = page + 1
-
-# done, over and out

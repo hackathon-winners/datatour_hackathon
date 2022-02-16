@@ -10,6 +10,87 @@ mapboxgl.accessToken =
   var activeMarker = null;
   var activePopup = null;
 
+  var tours = [];
+  var lookup = [];
+
+  /*
+   * SEARCH AS YOU TYPE
+   * so that users can look for tours
+   */
+  const search_input = document.getElementById("search");
+  const results = document.getElementById("results");
+
+  search_input.addEventListener("input", (e) => {
+    // re-displaying countries based on the new search_term
+    searchHandler(e.target.value);
+  });
+
+  const searchHandler = (search_term) => {
+    results.innerHTML = "";
+
+    const ul = document.createElement("ul");
+    ul.classList.add("countries");
+
+    tours.data.items
+      .filter(
+        (tour) =>
+          tour.title.toLowerCase().includes(search_term.toLowerCase()) ||
+          (tour.city &&
+            tour.city.toLowerCase().includes(search_term.toLowerCase())) ||
+          tour.id == search_term
+      )
+      .splice(0, 20)
+      .forEach((tour) => {
+        // creating the structure
+        const li = document.createElement("li");
+        li.classList.add("tour-item");
+        li.innerText = tour.title;
+
+        li.addEventListener("click", (e) => {
+          const [marker, popup] = createMarker(tour);
+          zoomInTour(e, marker, popup, tour);
+        });
+        ul.appendChild(li);
+      });
+
+    results.appendChild(ul);
+  };
+
+  /*
+   *
+   * Create a Marker Pin
+   *
+   */
+  const createMarker = (tour) => {
+    const alreadyMarker = lookup[tour.coordinates.join(",")];
+
+    if (alreadyMarker) {
+      return [alreadyMarker, alreadyMarker.getPopup()];
+    }
+    // popup for elevation later
+    const popup = new mapboxgl.Popup({ closeButton: false });
+    // Add Marker to Map
+    const marker = new mapboxgl.Marker({
+      color: "red",
+      scale: 0.8,
+      draggable: false,
+      pitchAlignment: "auto",
+      rotationAlignment: "auto",
+    })
+      .setPopup(popup)
+      .setLngLat(tour.coordinates)
+      .addTo(map);
+
+    // Click Handler on Marker
+    marker
+      .getElement()
+      .addEventListener("click", (e) => zoomInTour(e, marker, popup, tour));
+
+    lookup[tour.coordinates.join(",")] = marker;
+
+    return [marker, popup];
+  };
+
   // Map Object
   const map = new mapboxgl.Map({
     container: "map",
@@ -25,8 +106,9 @@ mapboxgl.accessToken =
   // We wait for
   // - download of first batch of routes
   // - Loading of the map
-  const [tours] = await Promise.all([
-    fetch("api/1.json").then((response) => response.json()),
+  [tours] = await Promise.all([
+    // no loaded yet
+    fetch("api/all.json").then((response) => response.json()),
     map.once("load"),
   ]);
 
@@ -82,19 +164,29 @@ mapboxgl.accessToken =
 
   await map.once("idle");
 
+  const firstRandomTours = tours.data.items.slice(0, 30);
+  // We add the Pins for the routes
+  firstRandomTours.forEach((tour) => {
+    createMarker(tour);
+  });
+
   const zoomInTour = async (e, marker, popup, tour) => {
     // make sure no movement
     document.getElementById("map").classList.add("pointer-none");
 
     // fly to the clicked marker
     map.flyTo({
-      center: tour.geo.main,
+      center: tour.coordinates,
       zoom: 12,
       pitch: 56,
       bearing: 150,
     });
 
-    const coordinates = tour.geo.geometry.split(" ");
+    const tourDetail = await fetch("api/tour/" + tour.id + ".json").then(
+      (response) => response.json()
+    );
+
+    const coordinates = tourDetail.data.geo.geometry.split(" ");
     const coordinatesArray = [];
 
     for (let i = 0; i < coordinates.length; i++) {
@@ -154,28 +246,6 @@ mapboxgl.accessToken =
 
     window.requestAnimationFrame(frame);
   };
-
-  // We add the Pins for the routes
-  tours.data.items.forEach((tour) => {
-    // popup for elevation later
-    const popup = new mapboxgl.Popup({ closeButton: false });
-    // Add Marker to Map
-    const marker = new mapboxgl.Marker({
-      color: "red",
-      scale: 0.8,
-      draggable: false,
-      pitchAlignment: "auto",
-      rotationAlignment: "auto",
-    })
-      .setPopup(popup)
-      .setLngLat(tour.geo.main)
-      .addTo(map);
-
-    // Click Handler on Marker
-    marker
-      .getElement()
-      .addEventListener("click", (e) => zoomInTour(e, marker, popup, tour));
-  });
 
   // The total animation duration, in milliseconds
   const animationDuration = 20000;

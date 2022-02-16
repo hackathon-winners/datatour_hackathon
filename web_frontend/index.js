@@ -149,6 +149,9 @@ mapboxgl.accessToken =
     hash: false,
   });
 
+  // Add zoom and rotation controls to the map.
+  map.addControl(new mapboxgl.NavigationControl());
+  
   // We wait for
   // - download of first batch of routes
   // - Loading of the map

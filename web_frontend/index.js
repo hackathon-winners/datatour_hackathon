@@ -54,6 +54,9 @@ mapboxgl.accessToken =
       li.innerText = tour.title;
 
       li.addEventListener("click", (e) => {
+        // cleanup if there was any previous tour
+        cleanUp();
+
         const [marker, popup] = createMarker(tour);
         zoomInTour(e, marker, popup, tour);
         results.innerHTML = "";
@@ -62,6 +65,29 @@ mapboxgl.accessToken =
     });
 
     results.appendChild(ul);
+  };
+
+  const cleanUp = (tour) => {
+    document.getElementById("zoomOut").style.display = "none";
+
+    // remove painted layers
+    if (activeTour) {
+      if (map.getLayer("line-" + activeTour.id)) {
+        map.removeLayer("line-" + activeTour.id);
+      }
+      if (map.getSource("line-" + activeTour.id)) {
+        map.removeSource("line-" + activeTour.id);
+      }
+    }
+    if (activeMarker) {
+      activeMarker.togglePopup();
+    }
+    startTime = null;
+    activeTour = null;
+    activePath = [];
+    activePathDistance = 0;
+    activeMarker = null;
+    activePopup = null;
   };
 
   /*
@@ -114,7 +140,13 @@ mapboxgl.accessToken =
   // - Loading of the map
   [tours] = await Promise.all([
     // no loaded yet
-    fetch("api/all.json").then((response) => response.json()),
+    fetch("api/all.json").then((response) => {
+      // allow searching
+      search_input.disabled = false;
+
+      // return json promise
+      return response.json();
+    }),
     map.once("load"),
   ]);
 
@@ -145,11 +177,6 @@ mapboxgl.accessToken =
   map.setTerrain({ source: "mapbox-dem", exaggeration: 1.5 });
 
   const zoomBackOut = (e) => {
-    document.getElementById("zoomOut").style.display = "none";
-
-    map.removeLayer("line-" + activeTour.id);
-    map.removeSource("line-" + activeTour.id);
-
     map.flyTo({
       zoom: 8,
       center: [14.633576, 48.250435],
@@ -157,13 +184,7 @@ mapboxgl.accessToken =
       bearing: 0,
     });
 
-    activeMarker.togglePopup();
-    startTime = null;
-    activeTour = null;
-    activePath = [];
-    activePathDistance = 0;
-    activeMarker = null;
-    activePopup = null;
+    cleanUp();
   };
 
   document.getElementById("zoomOut").addEventListener("click", zoomBackOut);

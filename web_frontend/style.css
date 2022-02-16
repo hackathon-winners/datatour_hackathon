@@ -64,9 +64,10 @@ html {
   border: none;
   font-size: 16px;
   outline: none;
+  background: white;
 }
 #searchbutton {
-  background: transparent;
+  background: white;
   border: none;
 }
 #results {

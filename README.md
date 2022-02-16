@@ -24,21 +24,21 @@ Also currently we donn't the tour ID and any sharing information, this would be 
 
 ## TODO's
 
-Currently the Vapor Swift backend is not compiling a x86-64 docker image. This has to solved or the image has to be hosted on some arm64 hoster but e.g. Google cloud run only supports linug/amd64.
+Currently the Vapor Swift backend is ~~not~~ compiling a `x86-64` docker image. This has to solved or the image has to be hosted on some `arm64` hoster but e.g. Google cloud run only supports `linux/amd64` witch is `x86-64`.
 
-This solved we can use the API also to provide more dynamic (random) / tour of the day informations and also persist the used ones in postgresql db.
+This solved, we could now use the API also to provide more dynamic (random) / tour of the day informations and also persist the used ones in postgresql db.
 
 Before building the backend copy the Tour_de.json to `/Resources`. (>100MB -> git lfs)
 
 ### Docker
 
-The docker container can be build with:
+The docker container can be build with: (inside folder `vapor_backend`)
 
 `docker compose build`
 
 or multi architecture:
 
-`vapor_backend % docker buildx build --platform linux/amd64 --push -t eu.gcr.io/tourdata/tourdata .`
+`docker buildx build --platform linux/amd64 --push -t eu.gcr.io/tourdata/tourdata .`
 
 [info](https://www.docker.com/blog/multi-platform-docker-builds/)
 

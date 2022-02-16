@@ -17,8 +17,15 @@ mapboxgl.accessToken =
    * SEARCH AS YOU TYPE
    * so that users can look for tours
    */
+  const search_wrapper = document.getElementById("searchwrapper");
   const search_input = document.getElementById("search");
+  const search_button = document.getElementById("searchbutton");
   const results = document.getElementById("results");
+
+  search_button.addEventListener("click", function () {
+    results.innerHTML = "";
+    search_wrapper.classList.toggle("close");
+  });
 
   search_input.addEventListener("input", (e) => {
     // re-displaying countries based on the new search_term
@@ -26,32 +33,40 @@ mapboxgl.accessToken =
   });
 
   const searchHandler = (search_term) => {
+    if (search_term == "") {
+      results.style.display = "none";
+      return;
+    }
+    results.style.display = "block";
     results.innerHTML = "";
 
     const ul = document.createElement("ul");
     ul.classList.add("countries");
 
-    tours.data.items
-      .filter(
-        (tour) =>
-          tour.title.toLowerCase().includes(search_term.toLowerCase()) ||
-          (tour.city &&
-            tour.city.toLowerCase().includes(search_term.toLowerCase())) ||
-          tour.id == search_term
-      )
-      .splice(0, 20)
-      .forEach((tour) => {
-        // creating the structure
-        const li = document.createElement("li");
-        li.classList.add("tour-item");
-        li.innerText = tour.title;
+    const searchResult = tours.data.items.filter(
+      (tour) =>
+        tour.title.toLowerCase().includes(search_term.toLowerCase()) ||
+        (tour.city &&
+          tour.city.toLowerCase().includes(search_term.toLowerCase())) ||
+        tour.id == search_term
+    );
 
-        li.addEventListener("click", (e) => {
-          const [marker, popup] = createMarker(tour);
-          zoomInTour(e, marker, popup, tour);
-        });
-        ul.appendChild(li);
+    if (!searchResult.length) {
+      results.innerHTML = "Es wurde leider keine Tour gefunden";
+    }
+    searchResult.splice(0, 20).forEach((tour) => {
+      // creating the structure
+      const li = document.createElement("li");
+      li.classList.add("tour-item");
+      li.innerText = tour.title;
+
+      li.addEventListener("click", (e) => {
+        const [marker, popup] = createMarker(tour);
+        zoomInTour(e, marker, popup, tour);
+        results.innerHTML = "";
       });
+      ul.appendChild(li);
+    });
 
     results.appendChild(ul);
   };

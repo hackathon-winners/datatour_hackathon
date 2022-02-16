@@ -5,6 +5,7 @@ html {
   margin: 0;
   padding: 0;
   font-family: sans-serif;
+  background: lightblue;
 }
 #map {
   position: absolute;
@@ -26,13 +27,20 @@ html {
   display: none;
 }
 
-.searchwrapper {
+#searchwrapper {
   position: absolute;
-  top: 20px;
-  left: 20px;
+  padding: 20px;
   width: 575px;
+  max-width: 100%;
+  box-sizing: border-box;
+  transform: translate3d(0, 0, 0);
+  transition: all ease-in-out 0.3s;
+}
+#searchwrapper.close {
+  transform: translate3d(-85%, 0, 0);
 }
 .bar {
+  position: relative;
   display: flex;
   border-radius: 30px;
   border: 1px solid #dcdcdc;
@@ -40,6 +48,8 @@ html {
   overflow: hidden;
   padding-left: 20px;
   padding-right: 20px;
+  box-sizing: border-box;
+  z-index: 1;
 }
 .bar:hover {
   box-shadow: 1px 1px 8px 1px #ccc;
@@ -60,12 +70,15 @@ html {
   border: none;
 }
 #results {
+  position: relative;
+  display: none;
   background: white;
   border-radius: 0px 0px 10px 10px;
   margin-left: 20px;
   margin-right: 20px;
-  margin-top: -10px;
+  margin-top: 0px;
   padding: 10px;
+  z-index: 0;
 }
 #results ul {
   margin-top: 0;
@@ -77,4 +90,13 @@ html {
 }
 .pointer-none {
   pointer-events: none;
+}
+
+.tour-item {
+  cursor: pointer;
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+.tour-item:hover {
+  background: #eee;
 }

@@ -3,15 +3,15 @@ mapboxgl.accessToken =
 
 (async () => {
   // global state FTW!!1
-  var startTime = null;
-  var activeTour = null;
-  var activePath = [];
-  var activePathDistance = 0;
-  var activeMarker = null;
-  var activePopup = null;
+  let startTime = null;
+  let activeTour = null;
+  let activePath = [];
+  let activePathDistance = 0;
+  let activeMarker = null;
+  let activePopup = null;
 
-  var tours = [];
-  var lookup = [];
+  let tours = [];
+  let lookup = [];
 
   /*
    * SEARCH AS YOU TYPE
@@ -45,7 +45,7 @@ mapboxgl.accessToken =
     );
 
     if (!searchResult.length) {
-      results.innerHTML = "Es wurde leider keine Tour gefunden";
+      results.innerHTML = "Es wurde leider keine Tour gefunden.";
     }
     searchResult.splice(0, 20).forEach((tour) => {
       // creating the structure
@@ -67,7 +67,7 @@ mapboxgl.accessToken =
     results.appendChild(ul);
   };
 
-  const cleanUp = (tour) => {
+  const cleanUp = () => {
     document.getElementById("zoomOut").style.display = "none";
 
     // remove painted layers
@@ -116,9 +116,10 @@ mapboxgl.accessToken =
       .addTo(map);
 
     // Click Handler on Marker
-    marker
-      .getElement()
-      .addEventListener("click", (e) => zoomInTour(e, marker, popup, tour));
+    marker.getElement().addEventListener("click", (e) => {
+      cleanUp();
+      zoomInTour(e, marker, popup, tour);
+    });
 
     lookup[tour.coordinates.join(",")] = marker;
 

@@ -89,8 +89,8 @@ mapboxgl.accessToken =
     // fly to the clicked marker
     map.flyTo({
       center: tour.geo.main,
-      zoom: 13,
-      pitch: 76,
+      zoom: 12,
+      pitch: 56,
       bearing: 150,
     });
 

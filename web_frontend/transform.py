@@ -1,5 +1,6 @@
 import xml.etree.cElementTree as ET
 import json
+import random
 
 # transforms the Tour_de.xml (not in this repo) to a smaller json file
 # this time in python and not PHP due to size issues...
@@ -7,31 +8,7 @@ import json
 tree = ET.parse('./Tour_de.xml')
 root = tree.getroot()
 tours = root.findall('items/item')
-
-page = 1
-per_page = 30
-
-# json output dict
-output = {
-    "data": {
-        "total": 3200,
-        "page": page,
-        "per_page": per_page,
-        "items": []
-    }
-}
-
-# count total number of tours that is relevant
-r = 0
-for tour in tours:
-    # array of categories
-    categories = [element.text for element in tour.find('categories')]
-    # we only are interested in wanderwege
-    if 'Wanderweg' in categories:
-        r = r+1
-
-# add it to the dict
-output['data']['total'] = r
+tourlist = []
 
 r = 0
 # loop through all tours
@@ -68,16 +45,41 @@ for tour in tours:
         }
 
         # add the tour
-        output['data']['items'].append(dataset)
+        tourlist.append(dataset)
 
-        # we really only want to have a certain number of tours in a api request, so we write it out here
-        if r % per_page == 0:
-            with open("./api/" + str(page) + '.json', 'w') as f:
-                json.dump(output, f)
 
-                output['data']['items'] = []
-                output['data']['page'] = page + 1
-                page = page + 1
+page = 1
+per_page = 30
+
+# json output dict
+output = {
+    "data": {
+        "total": len(tourlist),
+        "page": page,
+        "per_page": per_page,
+        "items": []
+    }
+}
+
+count = 0
+random.shuffle(tourlist)
+
+for tour in tourlist:
+
+    count = count + 1
+    output['data']['items'].append(tour)
+
+    # we really only want to have a certain number of tours in a api request, so we write it out here
+    if count == 100:
+        with open("./api/" + str(page) + '.json', 'w') as f:
+            json.dump(output, f)
+
+            page = page + 1
+            count = 0
+
+            output['data']['items'] = []
+            output['data']['page'] = page
+
 
 # all the remaining tours will be added as well
 with open("./api/" + str(page) + '.json', 'w') as f:

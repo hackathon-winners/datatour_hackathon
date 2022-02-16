@@ -3,6 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <!-- inspired by https://docs.mapbox.com/mapbox-gl-js/example/query-terrain-elevation/ Example-->
+    <!-- inspired by https://shadowmap.org - it is pretty cool to work with geodata -->
     <!-- Team Grün - Florian Bauer & Stefan Fessler -->
     <title>Datatour Hackathon - Tour Visualisation</title>
     <meta
@@ -13,13 +14,13 @@
       href="https://api.mapbox.com/mapbox-gl-js/v2.7.0/mapbox-gl.css"
       rel="stylesheet"
     />
-    <link href="style.css" rel="stylesheet" />
+    <link href="style.css?v=0.1" rel="stylesheet" />
   </head>
   <body>
     <div id="map"></div>
     <button id="zoomOut">Nach oben fliegen</button>
     <script src="https://api.mapbox.com/mapbox-gl-js/v2.7.0/mapbox-gl.js"></script>
     <script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
-    <script src="index.js"></script>
+    <script src="index.js?v=0.1"></script>
   </body>
 </html>
